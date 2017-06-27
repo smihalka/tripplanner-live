@@ -28,7 +28,7 @@ $(document).ready(function(){
       let $select = $(this).siblings('select')
       let $value = $select.find(':selected').data()
       let $type
-      
+
       if ($value.type === 'hotel') {
         $selectedItem = hotels.find((hotel) => {
          return  hotel.id === $value.id
@@ -48,15 +48,27 @@ $(document).ready(function(){
       mapModule.drawMarker($value.type, $selectedItem.place.location);
       $( ".list-group" ).data( "itinerary", $selectedItem);
       //$( ".title." + $value.type).text($( ".list-group" ).data( "itinerary").name);
-      let itinerarySpan = "<span class='title'>" + $selectedItem.name + "</span>"
       let removeButton = "<button class='btn btn-xs btn-danger remove btn-circle'>x</button>"
+      let itinerarySpan = "<span class='title'>" + $selectedItem.name + "</span>"
+
       $( ".itinerary-item." + $value.type).append(itinerarySpan + removeButton)
     });
 
   $('#itinerary').on('click', 'button', function(){
-    let $toggleSpan = $(this).siblings('span')
+    let $toggleSpan = $(this).prev()
     $toggleSpan.remove()
     $(this).remove()
   })
- 
+
+
+  let count = 0;
+
+  $('#day-add').on('click', function(){
+    count++
+      $('.day-btn').last().after("<button class='tn btn-circle day-btn current-day'>"+count+"</button>")
+  })
+  // $('.day-btn').on('click', 'button', function(){
+  //   alert("Yo")
+  // })
+
 })
