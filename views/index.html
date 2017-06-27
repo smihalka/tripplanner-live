@@ -64,11 +64,8 @@
             <h4>My Hotel</h4>
             <ul class="list-group">
               <div class="itinerary-item">
-                <!-- <select name="hotel">
-
-                </select> -->
-                <!-- <span class="title">Andaz Wall Street</span>
-                <button class="btn btn-xs btn-danger remove btn-circle">x</button> -->
+                <span class="title hotel"></span>
+                <!-- <button class="btn btn-xs btn-danger remove btn-circle">x</button> -->
               </div>
             </ul>
           </div>
@@ -76,8 +73,8 @@
             <h4>My Restaurants</h4>
             <ul class="list-group">
               <div class="itinerary-item">
-                <!-- <span class="title">Bouley</span>
-                <button class="btn btn-xs btn-danger remove btn-circle">x</button> -->
+                <span class="title restaurant"></span>
+                <!-- <button class="btn btn-xs btn-danger remove btn-circle">x</button> -->
               </div>
             </ul>
           </div>
@@ -85,8 +82,8 @@
             <h4>My Activities</h4>
             <ul class="list-group">
               <div class="itinerary-item">
-               <!--  <span class="title">Mahayana Buddhist Temple Association</span>
-                <button class="btn btn-xs btn-danger remove btn-circle">x</button> -->
+                <span class="title activity"></span>
+                <!-- <button class="btn btn-xs btn-danger remove btn-circle">x</button> -->
               </div>
             </ul>
           </div>
@@ -99,27 +96,50 @@
   var hotels = {{ hotels | dump | safe }};
   var restaurants = {{ restaurants | dump | safe }};
   var activities = {{ activities | dump | safe }};
-
+  console.log(hotels)
     var selectHotel = "<select data-type='hotel'>";
       for (var x = 0; x < hotels.length; x++) {
-        selectHotel += "<option name="+hotels[x].id+">" + hotels[x].name + "</option>";
+        selectHotel += "<option data-id="+hotels[x].id+" data-type='hotel'>" + hotels[x].name + "</option>";
       }
     selectHotel += "</select>";
     $('#hotel-choices').html(selectHotel);
 
     var selectRestaurants = "<select data-type='restaurant'>";
       for (var x = 0; x < restaurants.length; x++) {
-        selectRestaurants += "<option name="+restaurants[x].id+">" + restaurants[x].name + "</option>";
+        selectRestaurants += "<option data-id="+restaurants[x].id+" data-type='restaurant'>" + restaurants[x].name + "</option>";
       }
     selectRestaurants += "</select>";
     $('#restaurant-choices').html(selectRestaurants);
 
     var selectActivities = "<select data-type='activity'>";
       for (var x = 0; x < activities.length; x++) {
-        selectActivities += "<option name="+activities[x].id+">" + activities[x].name + "</option>";
+        selectActivities += "<option data-id="+activities[x].id+" data-type='activity'>" + activities[x].name + "</option>";
       }
     selectRestaurants += "</select>";
     $('#activity-choices').html(selectActivities);
 
+    $('#options-panel').on('click', 'button', function(){
+      let $select = $(this).siblings('select')
+      let $value = $select.find(':selected').data()
+      let $type
+      if ($value.type === 'hotel') $type = hotels
+      if ($value.type === 'restaurant') $type = restaurants
+      if ($value.type === 'activity') $type = activities
+      let $selectedItem = $type[$value.id -1]
+      $( ".list-group" ).data( "itinerary", $selectedItem);
+      $( ".title." + $value.type).text($( ".list-group" ).data( "itinerary").name);
+
+    })
+
 </script>
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
