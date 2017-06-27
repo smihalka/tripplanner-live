@@ -1,15 +1,15 @@
 // This file should contain all the record creation needed to seed the database with its default values.
-// The data can then be loaded with the node seed.js 
+// The data can then be loaded with the node seed.js
 
 var Promise = require('bluebird');
-var db = require('./models').db;
-var Place = require('./models').Place;
-var Hotel = require('./models').Hotel;
-var Restaurant = require('./models').Restaurant;
-var Activity = require('./models/').Activity;
+var db = require('./models');
+var Place = require('./models/place');
+var Hotel = require('./models/hotel');
+var Restaurant = require('./models/restaurant');
+var Activity = require('./models/activity');
 
 var data = {
-  hotel: [
+  hotels: [
     {name: "Andaz Wall Street", place: {address: "75 Wall St", city: "New York", state: "NY", phone: "123-456-7890", location: [40.705137, -74.007624]}, num_stars: 4, amenities: "Pool, Free Wi-Fi" },
     {name: "Hotel Mulberry", place: {address: "52 Mulberry St", city: "New York", state: "NY", phone: "123-456-7890", location: [40.715317, -73.999542]}, num_stars: 4.5, amenities: "Free Wi-Fi" },
     {name: "The Ritz-Carlton New York, Battery Park", place: {address: "Two West Street", city: "New York", state: "NY", phone: "123-456-7890", location: [40.705417, -74.017241]}, num_stars: 4.5, amenities: "24 hour Gym, Paid Wi-Fi" },
@@ -26,7 +26,7 @@ var data = {
     {name: "Cosmopolitan Hotel", place: {address: "95 W Broadway", city: "New York", state: "NY", phone: "123-456-7890", location: [40.715681, -74.008922]}, num_stars: 3.5, amenities: "Free Wif-Fi" },
     {name: "Club Quarters", place: {address: "140 Washington St", city: "New York", state: "NY", phone: "123-456-7890", location: [40.709630, -74.013940]}, num_stars: 4, amenities: "Free Wif-Fi" }
   ],
-  restaurant: [
+  restaurants: [
     {name: "Bouley", place: {address: "75 Wall St", city: "New York", state: "NY", phone: "123-456-7890", location: [40.705137, -74.013940]}, cuisine: "French", price: 4},
     {name: "Marc Forgione", place: {address: "134 Reade St", city: "New York", state: "NY", phone: "123-456-7890", location: [40.716526, -74.009567]}, cuisine: "Seafood", price: 3},
     {name: "Tamarind", place: {address: "99 Hudson St", city: "New York", state: "NY", phone: "123-456-7890", location: [40.718977, -74.008929]}, cuisine: "Indian", price: 3},
@@ -43,7 +43,7 @@ var data = {
     {name: "Mas Farmhouse", place: {address: "39 Downing St", city: "New York", state: "NY", phone: "123-456-7890", location: [40.729269, -74.003875]}, cuisine: "New American, French", price: 4},
     {name: "Xe Lua", place: {address: "86 Mulberry St", city: "New York", state: "NY", phone: "123-456-7890", location: [40.716544, -73.998626]}, cuisine: "Vietnamese", price: 1}
   ],
-  activity: [
+  activities: [
     {name: "Mahayana Temple Buddhist Association", place: {address: "133 Canal St", city: "New York", state: "NY", phone: "123-456-7890", location: [40.716291, -73.995315]}, age_range: "All" },
     {name: "South Street Seaport", place: {address: "19 Fulton St", city: "New York", state: "NY", phone: "123-456-7890", location: [40.707119, -74.003602]}, age_range: "All" },
     {name: "Ground Zero", place: {address: "1 Liberty Plz Lbby 2", city: "New York", state: "NY", phone: "123-456-7890", location: [40.709329, -74.013120]}, age_range: "All" },
@@ -65,18 +65,24 @@ var data = {
 db.sync({force: true})
 .then(function () {
   console.log("Dropped old data, now inserting data");
-  return Promise.map(Object.keys(data), function (name) {
-    return Promise.map(data[name], function (item) {
-      return db.model(name)
-      .create(item, {
-        include: [Place]
-      });
-    });
+  const creatingHotels = Promise.map(data.hotels, function (hotel) {
+    return Hotel.create(hotel, { include: [Place] });
   });
+  const creatingRestaurants = Promise.map(data.restaurants, function (restaurant) {
+    return Restaurant.create(restaurant, { include: [Place] });
+  });
+  const creatingActivities = Promise.map(data.activities, function (activity) {
+    return Activity.create(activity, { include: [Place] });
+  });
+  return Promise.all([creatingHotels, creatingRestaurants, creatingActivities]);
 })
 .then(function () {
-  console.log("Finished inserting data (press ctrl-c to exit)");
+  console.log('Finished inserting data');
 })
 .catch(function (err) {
   console.error('There was totally a problem', err, err.stack);
+})
+.finally(function () {
+db.close(); // creates but does not return a promise
+  return null; // stops bluebird from complaining about un-returned promise
 });
