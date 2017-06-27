@@ -1,5 +1,4 @@
-$(function initializeMap (){
-
+var mapModule = (function (){
   var fullstackAcademy = new google.maps.LatLng(40.705086, -74.009151);
 
   var styleArr = [{
@@ -56,8 +55,11 @@ $(function initializeMap (){
     marker.setMap(currentMap);
   }
 
+  return {
+    drawMarker: drawMarker
+  }
 //drawMarker('hotel', [40.705137, -74.007624]);
   // drawMarker('restaurant', [40.705137, -74.013940]);
   // drawMarker('activity', [40.716291, -73.995315]);
 
-});
+}());
